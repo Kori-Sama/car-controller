@@ -1,10 +1,11 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import TcpClient from "../lib/expo-tcp-client";
 const Controller = () => {
   type Direction = "up" | "down" | "left" | "right";
   const onPress = (direction: Direction) => {
-    console.log("Moving", direction);
+    TcpClient.send(direction);
   };
 
   return (

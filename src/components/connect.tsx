@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -8,8 +8,11 @@ import {
   TextInput,
   Dimensions,
   Button,
+  NativeEventEmitter,
+  NativeModules,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import TcpClient from "../lib/expo-tcp-client";
 
 interface ConnectProps {
   visible: boolean;
@@ -20,11 +23,27 @@ interface ConnectProps {
 const windowHeight = Dimensions.get("window").height;
 
 const Connect = ({ visible, hide, updateStatus }: ConnectProps) => {
-  const [host, setHost] = useState("");
-  const [port, setPort] = useState("");
+  const [host, setHost] = useState("127.0.0.1");
+  const [port, setPort] = useState("8888");
+
+  useEffect(() => {
+    const emitter = new NativeEventEmitter(NativeModules.TcpClientModule);
+    const onConnect = emitter.addListener("onConnect", () => {
+      updateStatus(true);
+    });
+
+    const onClose = emitter.addListener("onClose", () => {
+      updateStatus(false);
+    });
+
+    return () => {
+      onConnect.remove();
+      onClose.remove();
+    };
+  });
 
   const connect = () => {
-    console.log("Connecting to", host, port);
+    TcpClient.connect(host, port);
   };
 
   return (
