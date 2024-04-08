@@ -1,10 +1,10 @@
 import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { Direction, sendDirection } from "../lib/http";
 const Controller = () => {
-  type Direction = "up" | "down" | "left" | "right";
   const onPress = (direction: Direction) => {
-    console.log("Moving", direction);
+    sendDirection(direction);
   };
 
   return (

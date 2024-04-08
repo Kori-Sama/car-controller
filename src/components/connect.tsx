@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -8,8 +8,10 @@ import {
   TextInput,
   Dimensions,
   Button,
+  Alert,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { heartBeat, setServer } from "../lib/http";
 
 interface ConnectProps {
   visible: boolean;
@@ -23,9 +25,47 @@ const Connect = ({ visible, hide, updateStatus }: ConnectProps) => {
   const [host, setHost] = useState("");
   const [port, setPort] = useState("");
 
+  let timer: NodeJS.Timeout | null = null;
+  let times = 0;
+
   const connect = () => {
-    console.log("Connecting to", host, port);
+    if (timer) return;
+    console.log("Connecting...");
+
+    updateStatus(false);
+
+    console.log(`Connecting to ${host}:${port}`);
+
+    setServer(host, port);
+
+    timer = setInterval(async () => {
+      const isAlive = await heartBeat();
+      if (isAlive) {
+        times = 0;
+        updateStatus(true);
+      }
+      if (!isAlive) {
+        times++;
+        console.log(`Connection lost ${times} times`);
+        if (times > 3) {
+          times = 0;
+          Alert.alert("Connection lost");
+          clearInterval(timer!);
+          updateStatus(false);
+          timer = null;
+        }
+      }
+    }, 1000);
+    hide();
   };
+
+  useEffect(() => {
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, []);
 
   return (
     <Modal
