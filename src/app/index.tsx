@@ -1,5 +1,12 @@
-import { View, Text, Button, Modal, StyleSheet } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Button,
+  Modal,
+  StyleSheet,
+  PermissionsAndroid,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import Connect from "../components/connect";
 import Status from "../components/status";
 import Controller from "../components/controller";
