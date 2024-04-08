@@ -12,7 +12,6 @@ import {
   NativeModules,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import TcpClient from "../lib/expo-tcp-client";
 
 interface ConnectProps {
   visible: boolean;
@@ -26,25 +25,7 @@ const Connect = ({ visible, hide, updateStatus }: ConnectProps) => {
   const [host, setHost] = useState("127.0.0.1");
   const [port, setPort] = useState("8888");
 
-  useEffect(() => {
-    const emitter = new NativeEventEmitter(NativeModules.TcpClientModule);
-    const onConnect = emitter.addListener("onConnect", () => {
-      updateStatus(true);
-    });
-
-    const onClose = emitter.addListener("onClose", () => {
-      updateStatus(false);
-    });
-
-    return () => {
-      onConnect.remove();
-      onClose.remove();
-    };
-  });
-
-  const connect = () => {
-    TcpClient.connect(host, port);
-  };
+  const connect = () => {};
 
   return (
     <Modal
